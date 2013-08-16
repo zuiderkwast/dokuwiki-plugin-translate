@@ -9,6 +9,7 @@ div.dokuwiki div.plugin_translate {
 div.dokuwiki div.plugin_translate ul {
     padding: 0;
     margin: 0;
+    list-style: none;
 }
 div.dokuwiki div.plugin_translate ul li{
     float: left;
