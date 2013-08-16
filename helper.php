@@ -73,6 +73,11 @@ class helper_plugin_translate extends DokuWiki_Plugin {
                 // Use the UI language
                 $lang = $conf['lang'];
             }
+            if (!isset($lang) &&
+                ($default_lang = $this->getConf('default_original_language')) &&
+                $this->languageExists($default_lang)) {
+                $lang = $default_lang;
+            }
             $this->page_language[$id] = $lang;
         }
         return $this->page_language[$id];
@@ -209,7 +214,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
     public function translationLink($language,$text='') {
         $langname = $this->getLanguageName($language);
         if ($text=='') {
-            $text = $this->getConf('')=='' ? $langname : $language;
+            $text = $this->getConf('link_style') == 'langname' ? $langname : $language;
         }
         $current_lang = $this->getPageLanguage();
         $original_id = $this->getOriginal();

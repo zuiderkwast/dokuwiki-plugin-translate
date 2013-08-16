@@ -11,6 +11,9 @@ $meta['enabled_languages'] = array('string',
     '_pattern'=>'/^\s*(?:(?:\w{2,3}(?:-\w\w)?)(?:\s*,\s*\w{2,3}(?:-\w\w)?)*)?\s*$/');
 $meta['guess_lang_by_ns'] = array('onoff');
 $meta['guess_lang_by_ui_lang'] = array('onoff');
+$meta['default_original_language'] = array('string',
+    // Language code
+    '_pattern'=>'/^\s*(?:(?:\w{2,3}(?:-\w\w)?)(?:\s*,\s*\w{2,3}(?:-\w\w)?)*)?\s*$/');
 $meta['use_language_namespace'] = array('onoff');
 
 // namespaces and pages
@@ -26,4 +29,4 @@ $meta['author_group'] = array('string');
 $meta['insert_translation_links'] = array('onoff');
 $meta['link_style']  = array('multichoice', '_choices' => array('langcode','langname'));
 
-//Setup VIM: ex: et ts=2 enc=utf-8 :
+//Setup VIM: ex: et ts=4 enc=utf-8 :

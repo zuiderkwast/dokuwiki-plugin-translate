@@ -4,6 +4,7 @@
 $lang['enabled_languages'] = "Enabled languages. Comma separated list of codes. Leave empty for auto.";
 $lang['guess_lang_by_ns'] = "If the namespace of a page is a valid language code, use it to guess the page language when unknown";
 $lang['guess_lang_by_ui_lang'] = "Use the wiki's user interface to auto-detect guess page language when unknown";
+$lang['default_original_language'] = "If the page language can not be detected, assume this language for pages";
 $lang['use_language_namespace'] = "Use language code as namespace for translations";
 
 // namespaces and pages
