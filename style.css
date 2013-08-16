@@ -1,0 +1,69 @@
+/* translate links */
+div.dokuwiki div.plugin_translate {
+    float: right;
+    font-size: 95%;
+    padding-right: 0.1em;
+    margin-bottom: 0.3em;
+}
+
+div.dokuwiki div.plugin_translate ul {
+    padding: 0;
+    margin: 0;
+}
+div.dokuwiki div.plugin_translate ul li{
+    float: left;
+    list-style-type: none;
+    padding: 0;
+    margin: 0.2em 0 0 0;
+}
+
+div.dokuwiki div.plugin_translate ul li a.wikilink1,
+div.dokuwiki div.plugin_translate ul li a.wikilink2 {
+    margin: 0.1em 0.2em;
+}
+/* translate page with form */
+div.dokuwiki form#translate__plugin fieldset {
+    width:40em;
+}
+div.dokuwiki form#translate__plugin label {
+    display:block;
+    margin:5px;
+    overflow:auto;
+}
+div.dokuwiki form#translate__plugin label span {
+    display:block;
+    float:left;
+    text-align:right;
+    width:38%;
+}
+div.dokuwiki form#translate__plugin label textarea.edit,
+div.dokuwiki form#translate__plugin label input.edit {
+    display:block;
+    float:left;
+    margin-left:5px;
+    width:58%;
+}
+div.dokuwiki form#translate__plugin label select {
+    display:block;
+    float:left;
+    margin-left:5px;
+}
+
+/* edit page */
+div.dokuwiki div#wrapper__wikitext.hor {
+    float:left;
+    width:53%;
+}
+div.dokuwiki div#wrapper__sourcetext.hor {
+    float:right;
+    width:46%;
+}
+div.dokuwiki div#wrapper__sourcetext.ver {
+    margin-top: 2px;
+}
+div.dokuwiki div#wrapper__sourcetext.off {
+    display:none;
+}
+
+
+/* vim:ts=4:sw=4:et:enc=utf-8: */
