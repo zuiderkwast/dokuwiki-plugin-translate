@@ -73,10 +73,10 @@ class helper_plugin_translate extends DokuWiki_Plugin {
                 // Use the UI language
                 $lang = $conf['lang'];
             }
-            if (!isset($lang) &&
-                ($default_lang = $this->getConf('default_original_language')) &&
-                $this->languageExists($default_lang)) {
-                $lang = $default_lang;
+            if (!isset($lang) && ($default = $this->getConf('default_original_language')) &&
+                $this->languageExists($default)) {
+                // Use default language
+                $lang = $default;
             }
             $this->page_language[$id] = $lang;
         }
@@ -85,8 +85,8 @@ class helper_plugin_translate extends DokuWiki_Plugin {
     
     /** checks if a language exists, i.e. is enabled. */
     public function languageExists($lang) {
-        return in_array($lang, $this->getEnabledLanguages());
-        //return @file_exists(DOKU_INC.'inc/lang/'.$lang.'/lang.php');
+        return preg_match('/^\w{2,3}(?:-\w+)?$/', $lang) &&
+               is_dir(DOKU_INC . 'inc/lang/' . $lang);
     }
 
     public function getLanguageName($code) {
@@ -108,13 +108,6 @@ class helper_plugin_translate extends DokuWiki_Plugin {
                 $this->langnames[$code] = $local_name;
             }
         }
-        /*
-        // A more complete list, but the first letter in the local
-        // name is always capitalized
-        if (@include(dirname(__FILE__).'/langnames.php')) {
-            $this->langnames = $langinfo;
-        }
-        */
         else {
             $this->langnames = array(); // failed to load
         }
@@ -245,9 +238,8 @@ class helper_plugin_translate extends DokuWiki_Plugin {
             $langs = $this->getEnabledLanguages();
         } else {
             // Show only languages with existing translations
-            $meta = $orig === $ID ? $INFO['meta'] : p_get_metadata($orig);
-            if (empty($meta['relation']['translations'])) return; // no translations exist
-            $langs = array_values($meta['relation']['translations']);
+            $langs = array_values($this->getTranslations($orig));
+            if (empty($langs)) return; // no translations exist
         }
 
         // Add link to the original language, if not present
@@ -273,10 +265,9 @@ class helper_plugin_translate extends DokuWiki_Plugin {
         global $INFO,$ID;
         if (!$INFO['exists']) return;
         if (!$this->isTranslatable()) return;
-        $langs = $this->getEnabledLanguages();
         $orig = $this->getOriginal();
         $origlang = $this->getPageLanguage($orig);
-        $meta = $orig===$ID ? $INFO['meta'] : p_get_metadata($orig);
+        $langs = array_values($this->getTranslations($orig));
 
         $has_permission_translate = $this->hasPermissionTranslate();
 
@@ -289,14 +280,10 @@ class helper_plugin_translate extends DokuWiki_Plugin {
 
         $out = '<div class="plugin_translate">'.DOKU_LF;
         $out .= '<ul>'.DOKU_LF;
-        if (!empty($meta['relation']['translations'])) {
-            foreach ($langs as $lang) {
-                if ($lang===$origlang || in_array($lang, $meta['relation']['translations'])) { 
-                    $out .= '<li>'.DOKU_LF;
-                    $out .= '<div class="li">'.$this->translationLink($lang).'</div>'.DOKU_LF;
-		            $out .= '</li>'.DOKU_LF;
-		        }
-            }
+        foreach ($langs as $lang) {
+            $out .= '<li>'.DOKU_LF;
+            $out .= '<div class="li">'.$this->translationLink($lang).'</div>'.DOKU_LF;
+            $out .= '</li>'.DOKU_LF;
         }
         if ($has_permission_translate) {
             // "Translate this page" link
@@ -455,5 +442,26 @@ class helper_plugin_translate extends DokuWiki_Plugin {
         $form->printForm();
     }
 
+    /**
+     * Returns an associative of translations on the form page-id => language-code.
+     */
+    private function getTranslations($id) {
+        global $INFO, $ID;
+        $meta = $id === $ID ? $INFO['meta'] : p_get_metadata($id);
+        if (empty($meta['relation']['translations'])) return array(); // no translations exist
+        // Check if any of the translations have been deleted
+        foreach ($meta['relation']['translations'] as $page_id => $lang) {
+            if (!page_exists($page_id)) {
+                unset($meta['relation']['translations'][$page_id]);
+                $has_deleted = true;
+            }
+        }
+        if ($has_deleted) {
+            // Store the updated list of translations in metadata
+            $set_metadata['relation']['translations'] = $meta['relation']['translations'];
+            p_set_metadata($id, $set_metadata);
+        }
+        return $meta['relation']['translations'];
+    }
 }
 // vim:ts=4:sw=4:et:enc=utf-8:
