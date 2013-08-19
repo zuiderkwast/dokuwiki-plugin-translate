@@ -73,7 +73,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
                 // Use the UI language
                 $lang = $conf['lang'];
             }
-            if (!isset($lang) && ($default = $this->getConf('default_original_language')) &&
+            if (!isset($lang) && ($default = $this->getConf('default_language')) &&
                 $this->languageExists($default)) {
                 // Use default language
                 $lang = $default;

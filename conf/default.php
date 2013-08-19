@@ -4,7 +4,7 @@
 $conf['enabled_languages'] = '';
 $conf['guess_lang_by_ns'] = true;
 $conf['guess_lang_by_ui_lang'] = true;
-$conf['default_original_language'] = '';
+$conf['default_language'] = '';
 $conf['use_language_namespace'] = true;
 
 // namespaces and pages
