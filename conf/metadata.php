@@ -8,12 +8,12 @@
 // languages
 $meta['enabled_languages'] = array('string',
     // This pattern will accept most types of language codes...
-    '_pattern'=>'/^\s*(?:(?:\w{2,3}(?:-\w\w)?)(?:\s*,\s*\w{2,3}(?:-\w\w)?)*)?\s*$/');
+    '_pattern'=>'/^\s*(?:(?:\w{2,3}(?:-\w+)?)(?:\s*,\s*\w{2,3}(?:-\w+)?)*)?\s*$/');
 $meta['guess_lang_by_ns'] = array('onoff');
 $meta['guess_lang_by_ui_lang'] = array('onoff');
 $meta['default_original_language'] = array('string',
     // Language code
-    '_pattern'=>'/^\s*(?:(?:\w{2,3}(?:-\w\w)?)(?:\s*,\s*\w{2,3}(?:-\w\w)?)*)?\s*$/');
+    '_pattern'=>'/^\s*(?:(?:\w{2,3}(?:-\w+)?)(?:\s*,\s*\w{2,3}(?:-\w+)?)*)?\s*$/');
 $meta['use_language_namespace'] = array('onoff');
 
 // namespaces and pages
