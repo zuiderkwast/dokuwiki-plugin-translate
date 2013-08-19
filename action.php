@@ -27,18 +27,18 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
     /**
      * register the eventhandlers
      */
-    public function register(&$contr) {
+    public function register($contr) {
         $contr->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handleDokuwikiStarted');
         $contr->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'handleTplActUnknown');
         $contr->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handleActPreprocess');
         $contr->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'handleHtmlEditformOutput');
-        //$contr->register_hook('PARSER_METADATA_RENDER', 'BEFORE', $this, 'handleMetadataRender');
-        //$contr->register_hook('HTML_PAGE_FROMTEMPLATE', 'AFTER', $this, 'handlePageFromtemplate');
+        // TODO: When a translation is deleted, delete it from the original's list of translations.
+        //$contr->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'handlePageWrite');
         $contr->register_hook('TPL_ACT_RENDER', 'BEFORE', $this, 'handleActRender');
     }
 
     /** Ensure translators' permission to edit the page */
-    public function handleDokuwikiStarted(&$event, $param) {
+    public function handleDokuwikiStarted($event, $param) {
         global $INFO;
         $info = & $INFO;
 
@@ -69,7 +69,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
     }
 
     /** Insert translation links on top of page */
-    public function handleActRender(&$event, $param) {
+    public function handleActRender($event, $param) {
         if ($event->data != 'show') return;
         // show links to translations at top of page if that option is on.
         if ($this->getConf('insert_translation_links')) {
@@ -83,17 +83,17 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
      *
      * Redirect to the translated page if there is one already.
      */
-    public function handleActPreprocess(&$event, $param) {
+    public function handleActPreprocess($event, $param) {
         $act = $event->data;
         if (is_array($act)) {
             list($act) = array_keys($act);
         }
         switch ($act) {
             case 'createpage':
-                $this->handleActPreprocessCreatepage(&$event, $param);
+                $this->handleActPreprocessCreatepage($event, $param);
                 break;
             case 'translate':
-                $this->handleActPreprocessTranslate(&$event, $param);
+                $this->handleActPreprocessTranslate($event, $param);
                 break;
             default:
                 return; // not handled here
@@ -106,7 +106,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
      * Hook for event TPL_ACT_UNKNOWN, action 'translate'
      * Show page with translation form (before the translated page is created)
      */
-    public function handleTplActUnknown(&$event, $param) {
+    public function handleTplActUnknown($event, $param) {
         global $ID, $INFO; // $PRE, $TEXT, $SUF,
         if ($event->data == 'translate') {
             $my = $this->loadHelper('translate',true);
@@ -128,7 +128,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
      * Hook for event HTML_EDITFORM_OUTPUT.
      * Adds hidden form elements to the edit form.
      */
-    public function handleHtmlEditformOutput(&$event, $param) {
+    public function handleHtmlEditformOutput($event, $param) {
         global $INFO, $ID;
 
         // Original from meta
@@ -166,7 +166,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         $form->insertElement($pos++, form_makeCloseTag('div'));
     }
 
-    public function handleActPreprocessCreatepage(&$event, $param) {
+    public function handleActPreprocessCreatepage($event, $param) {
         global $INFO;
         $my = $this->loadHelper('translate',true);
         $title = $_REQUEST['title'];
@@ -228,7 +228,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
     }
 
     /** Handle translate action. Validates input and creates the translation page */
-    public function handleActPreprocessTranslate(&$event, $param) {
+    public function handleActPreprocessTranslate($event, $param) {
         global $ID, $INFO;
         $my = $this->loadHelper('translate',true);
         $target_title = $_REQUEST['title'];
