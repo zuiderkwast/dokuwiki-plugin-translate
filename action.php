@@ -252,8 +252,8 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
             return;
         }
 
-        // Check target language and title
-        if (empty($target_lang) || empty($target_title)) {
+        // Require target language
+        if (empty($target_lang)) {
             // Not filled. Show form.
             return;
         }
@@ -278,17 +278,20 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         }
 
         // Check if already translated
-        $translated_id = $my->translationLookup($ID, $target_lang);
+        $translated_id = $my->translationLookup($target_lang, $ID);
         if (!empty($translated_id)) {
-            $langname = $my->getLanguageName($target_lang);
-            msg(sprintf($this->getLang('e_translationexists'), $langname));
+            //$langname = $my->getLanguageName($target_lang);
+            //msg(sprintf($this->getLang('e_translationexists'), $langname));
 
-            /*
             // Redirect to already translated page
             $opts = array('id' => $translated_id, 'preact' => 'translate');
             trigger_event('ACTION_SHOW_REDIRECT',$opts,'act_redirect_execute');
             // This will redirect and exit.
-            */
+        }
+
+        // Require title
+        if (empty($target_title)) {
+            // Not filled. Show form.
             return;
         }
 
