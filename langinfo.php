@@ -198,7 +198,7 @@ $langinfo = array (
   ),
   'es' => 
   array (
-    0 => 'español, castellano',
+    0 => 'Español, Castellano',
     1 => 'Spanish, Castilian',
   ),
   'et' => 
