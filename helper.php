@@ -54,7 +54,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
     }
 
     /** using guessing rules set in configuration */
-    public function getPageLanguage($id=null) {
+    public function getPageLanguage($id=null,$default=null) {
         global $INFO, $ID, $conf;
         if (is_null($id)) $id = $ID;
         $meta = $id!==$ID ? p_get_metadata($id) : $INFO['meta'];
@@ -73,7 +73,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
                 // Use the UI language
                 $lang = $conf['lang'];
             }
-            if (!isset($lang) && ($default = $this->getConf('default_language')) &&
+            if (!isset($lang) && ($default || $default = $this->getConf('default_language')) &&
                 $this->languageExists($default)) {
                 // Use default language
                 $lang = $default;
@@ -261,22 +261,29 @@ class helper_plugin_translate extends DokuWiki_Plugin {
      * Returns HTML with links to all existing translations of the current
      * page and a link to create additional translations
      */
-    public function translationLinksExisting() {
+    public function translationLinksExisting($param_show_translate=true, $show_current=true) {
         global $INFO,$ID;
         if (!$INFO['exists']) return;
         if (!$this->isTranslatable()) return;
         $orig = $this->getOriginal();
         $origlang = $this->getPageLanguage($orig);
+        $currentlang = $this->getPageLanguage($ID);
         $langs = array_values($this->getTranslations($orig));
 
-        $has_permission_translate = $this->hasPermissionTranslate();
+        $show_translate = $param_show_translate && $this->hasPermissionTranslate();
 
-        if (count($langs) == 0 && !$has_permission_translate) return;
+        if (count($langs) == 0 && !$show_translate) return;
 
         // Add the original language if not present
         if (count($langs) > 0 && !in_array($origlang, $langs)) {
             array_unshift($langs, $origlang);
         }
+        
+        $idx = array_search($currentlang, $langs);
+        if ($idx !== false && !$show_current) {
+            unset($langs[$idx]);
+        }
+
 
         $out = '<div class="plugin_translate">'.DOKU_LF;
         $out .= '<ul>'.DOKU_LF;
@@ -285,7 +292,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
             $out .= '<div class="li">'.$this->translationLink($lang).'</div>'.DOKU_LF;
             $out .= '</li>'.DOKU_LF;
         }
-        if ($has_permission_translate) {
+        if ($show_translate) {
             // "Translate this page" link
             $text = $this->getLang('translate_this_page');
             $url = wl($orig, 'do=translate');
