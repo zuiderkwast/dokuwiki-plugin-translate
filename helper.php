@@ -373,6 +373,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
      */
     public function printActionTranslatePage() {
         global $ID, $INFO;
+        $target_id = $_REQUEST['target_id'] ?: $ID;
         $target_title = $_REQUEST['title'];
         $target_lang = $_REQUEST['to'];
 
@@ -412,6 +413,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
                                              '','',array('readonly'=>'readonly')));
                                              
         $form->addElement(form_makeTextField('title',$target_title,$this->getLang('translated_title'),'',$class));
+        $form->addElement(form_makeTextField('target_id',$target_id,$this->getLang('translated_id'),'',$class));
         $form->addElement(form_makeButton('submit','', $this->getLang('create_translation')));
         $form->printForm();
     }

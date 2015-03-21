@@ -233,6 +233,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         $my = $this->loadHelper('translate',true);
         $target_title = $_REQUEST['title'];
         $target_lang = $_REQUEST['to'];
+        $target_id = $_REQUEST['target_id'];
         $source_lang = $my->getPageLanguage();
 
         // Check if this is the original
@@ -295,8 +296,12 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
             return;
         }
 
+        // Use suggestion when not specified.
+        if (empty($target_id)) {
+            $target_id = $my->suggestTranslationId($target_title, $target_lang, $source_lang);
+        }
+        
         // Check if target page exists
-        $target_id = $my->suggestTranslationId($target_title, $target_lang, $source_lang);
         if (page_exists($target_id)) {
             // Error message
             //$this->_formErrors['title'] = 1;
