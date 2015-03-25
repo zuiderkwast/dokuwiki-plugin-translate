@@ -26,6 +26,7 @@ $lang['translate_to'] = 'Translate to';
 $lang['original_title'] = 'Original title';
 $lang['translated_title'] = 'Translated title';
 
+$lang['use_custom_id'] = 'Use custom page name';
 $lang['translated_id'] = 'Translated page name';
  
 $lang['create_translation'] = 'Create translation';
