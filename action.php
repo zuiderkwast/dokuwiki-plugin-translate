@@ -300,7 +300,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         if (page_exists($target_id)) {
             // Error message
             //$this->_formErrors['title'] = 1;
-            msg(sprintf($this->getLang['e_pageexists'], $target_title),-1);
+            msg(sprintf($this->getLang('e_pageexists'), $target_id),-1);
             return;
         }
 
