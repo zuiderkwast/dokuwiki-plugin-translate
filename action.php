@@ -27,7 +27,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
     /**
      * register the eventhandlers
      */
-    public function register($contr) {
+    public function register(Doku_Event_Handler $contr) {
         $contr->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handleDokuwikiStarted');
         $contr->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'handleTplActUnknown');
         $contr->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handleActPreprocess');
