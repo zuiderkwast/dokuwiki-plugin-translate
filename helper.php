@@ -128,7 +128,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
     private function checkIsTranslatable($id) {
         $str = trim($this->getConf('include_namespaces'));
         if ($str == '') return false; // nothing to include
-        $in_ns = create_function('$id,$ns','return substr($id,0,strlen($ns)+1) === "$ns:";');
+        $in_ns = fn($id, $ns) => substr($id, 0, strlen($ns) + 1) === "$ns:";
         if ($str != '*') {
             $inc_nss = array_map('trim',explode(',',$str));
             $any = false;
