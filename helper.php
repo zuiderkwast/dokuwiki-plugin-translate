@@ -82,7 +82,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
         }
         return $this->page_language[$id];
     }
-    
+
     /** checks if a language exists, i.e. is enabled. */
     public function languageExists($lang) {
         return preg_match('/^\w{2,3}(?:-\w+)?$/', $lang) &&
@@ -128,12 +128,11 @@ class helper_plugin_translate extends DokuWiki_Plugin {
     private function checkIsTranslatable($id) {
         $str = trim($this->getConf('include_namespaces'));
         if ($str == '') return false; // nothing to include
-        $in_ns = fn($id, $ns) => substr($id, 0, strlen($ns) + 1) === "$ns:";
         if ($str != '*') {
             $inc_nss = array_map('trim',explode(',',$str));
             $any = false;
             foreach ($inc_nss as $ns) {
-                if ($in_ns($id,$ns)) {
+                if (self::isIdInNamespace($id,$ns)) {
                     $any = true;
                     break;
                 }
@@ -144,7 +143,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
         if ($exc != '') {
             $exc_nss = array_map('trim',explode(',',$str));
             foreach ($exc_nss as $ns)
-                if ($in_ns($id,$ns))
+                if (self::isIdInNamespace($id,$ns))
                     return false;
         }
         $str = $this->getConf('exclude_pagenames');
@@ -158,6 +157,10 @@ class helper_plugin_translate extends DokuWiki_Plugin {
         // Finally check if the language can be detected
         $lang = $this->getPageLanguage($id);
         return !empty($lang);
+    }
+
+    private static function isIdInNamespace($id, $ns) {
+        return substr($id, 0, strlen($ns) + 1) === "$ns:";
     }
 
     /** Returns true if the current user is may translate the current page, false otherwise */
@@ -339,7 +342,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
     }
 
     public function suggestPageId($title, $language) {
-        return $this->getConf('use_language_namespace') ? 
+        return $this->getConf('use_language_namespace') ?
             $language.':'.cleanID($title) : cleanID($title);
     }
 
@@ -410,7 +413,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
         $form->addElement(form_makeTextField('',p_get_first_heading($ID),
                                              $this->getLang('original_title'),
                                              '','',array('readonly'=>'readonly')));
-                                             
+
         $form->addElement(form_makeTextField('title',$target_title,$this->getLang('translated_title'),'',$class));
         $form->addElement(form_makeButton('submit','', $this->getLang('create_translation')));
         $form->printForm();
@@ -421,7 +424,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
      */
     public function printActionCreatepagePage() {
         global $INFO;
-        
+
         // Start of page
         echo $this->locale_xhtml('newpage');
 
