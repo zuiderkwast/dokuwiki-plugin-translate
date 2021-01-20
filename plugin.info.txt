@@ -1,7 +1,7 @@
 base   translate
 author Viktor Söderqvist
 email  viktor@zuiderkwast.se
-date   2013-08-16
+date   2021-01-19
 name   Translate plugin
 desc   A translation plugin that doesn't require the page name to be the same in all languages
 url    https://www.dokuwiki.org/plugin:translate
