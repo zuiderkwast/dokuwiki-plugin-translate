@@ -140,7 +140,7 @@ class helper_plugin_translate extends DokuWiki_Plugin {
             if (!$any) return false;
         }
         $str = $this->getConf('exclude_namespaces');
-        if ($exc != '') {
+        if ($str != '') {
             $exc_nss = array_map('trim',explode(',',$str));
             foreach ($exc_nss as $ns)
                 if (self::isIdInNamespace($id,$ns))
