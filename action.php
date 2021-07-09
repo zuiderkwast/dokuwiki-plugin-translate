@@ -199,7 +199,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
             // Check special translation permission
             // Is the current user member of the translator group?
             $grp = $this->getConf('author_group');
-            $auth_ok = !empty($grp) && 
+            $auth_ok = !empty($grp) &&
                        in_array($grp, $INFO['userinfo']['grps']);
         }
         if (!$auth_ok) {
@@ -233,6 +233,8 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         $my = $this->loadHelper('translate',true);
         $target_title = $_REQUEST['title'];
         $target_lang = $_REQUEST['to'];
+        $target_id = $_REQUEST['target_id'];
+        $use_custom_id = $_REQUEST['use_custom_id'];
         $source_lang = $my->getPageLanguage();
 
         // Check if this is the original
@@ -295,8 +297,17 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
             return;
         }
 
+        // Use suggestion when not specified.
+        if ($use_custom_id) {
+            if (empty($target_id)) {
+                // Not filled. Show form.
+                return;
+            }
+        } else {
+            $target_id = $my->suggestTranslationId($target_title, $target_lang, $source_lang);
+        }
+        
         // Check if target page exists
-        $target_id = $my->suggestTranslationId($target_title, $target_lang, $source_lang);
         if (page_exists($target_id)) {
             // Error message
             //$this->_formErrors['title'] = 1;
@@ -311,7 +322,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
             // Check special translation permission
             // Is the current user member of the translator group?
             $grp = $this->getConf('translator_group');
-            $auth_ok = !empty($grp) && 
+            $auth_ok = !empty($grp) &&
                        in_array($grp, $INFO['userinfo']['grps']);
         }
         if (!$auth_ok) {

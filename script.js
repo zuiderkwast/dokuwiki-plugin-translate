@@ -59,4 +59,17 @@ function switchSplitView(){
     }
 };
 
+jQuery(function() {
+    var $chkBox = jQuery('input[name="use_custom_id"]');
+    var $idRow = jQuery('input[name="target_id"]').parent();
+    if (!$chkBox.length) {
+        return;
+    }
+
+    $idRow.hide();
+    $chkBox.change(function() {
+        $idRow.toggle();
+    });
+});
+
 // vim:ts=4:sw=4:et:enc=utf-8:
