@@ -31,7 +31,8 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         $contr->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handleDokuwikiStarted');
         $contr->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'handleTplActUnknown');
         $contr->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handleActPreprocess');
-        $contr->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'handleHtmlEditformOutput');
+        $contr->register_hook('FORM_EDIT_OUTPUT', 'BEFORE', $this, 'handleHtmlEditformOutput', []); // new
+        $contr->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'handleHtmlEditformOutput'); // old
         // TODO: When a translation is deleted, delete it from the original's list of translations.
         //$contr->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'handlePageWrite');
         $contr->register_hook('TPL_ACT_RENDER', 'BEFORE', $this, 'handleActRender');
@@ -125,7 +126,7 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
 
 
     /**
-     * Hook for event HTML_EDITFORM_OUTPUT.
+     * Hook for old event HTML_EDITFORM_OUTPUT an new event FORM_EDIT_OUTPUT
      * Adds hidden form elements to the edit form.
      */
     public function handleHtmlEditformOutput($event, $param) {
@@ -144,9 +145,39 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         $origtext = io_readWikiPage($file,$id);
 
         // Insert original page on the side
-        $form = & $event->data;
-        $pos = $form->findElementByType('wikitext');
-        if ($pos===false) return;
+        $form = $event->data;
+        if (is_a($form, \dokuwiki\Form\Form::class)) {
+            $pos = $form->findPositionByType('textarea'); // new
+            if ($pos===false) return;
+            $this->handleHtmlEditformOutputNG($form, $pos, $origtext);
+        } else {
+            $pos = $form->findElementByType('wikitext'); // old
+            if ($pos===false) return;
+            $this->handleHtmlEditformOutputLegacy($form, $pos, $origtext);
+        }
+    }
+
+    protected function handleHtmlEditformOutputNG($form, $pos, $origtext) {
+        // Before the wikitext...
+        $form->addElement(new dokuwiki\Form\TagOpenElement('div', array('id'=>'wrapper__wikitext','class'=>'hor')), $pos++);
+        // After the wikitext...
+        $pos++;
+        $form->addElement(new dokuwiki\Form\TagCloseElement('div'), $pos++);
+        $form->addElement(new dokuwiki\Form\TagOpenElement('div', array('id'=>'wrapper__sourcetext','class'=>'hor')), $pos++);
+        $origelem = '<textarea id="translate__sourcetext" '.
+                    //buildAttributes($attrs,true).
+                    'class="edit" readonly="readonly" cols="80" rows="10"'.
+                    'style="width:100%;"'.//  height:600px; overflow:auto
+                    '>'.NL.
+                    hsc($origtext).
+                    '</textarea>';
+        $form->addElement(new dokuwiki\Form\HTMLElement($origelem), $pos++);
+        $form->addElement(new dokuwiki\Form\TagCloseElement('div'), $pos++);
+        $form->addElement(new dokuwiki\Form\TagOpenElement('div', array('class'=>'clearer')), $pos++);
+        $form->addElement(new dokuwiki\Form\TagCloseElement('div'), $pos++);
+    }
+
+    protected function handleHtmlEditformOutputLegacy($form, $pos, $origtext) {
         // Before the wikitext...
         $form->insertElement($pos++, form_makeOpenTag('div', array('id'=>'wrapper__wikitext','class'=>'hor')));
         // After the wikitext...
@@ -344,4 +375,4 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         send_redirect($url);
     }
 }
-// vim:ts=4:sw=4:et:enc=utf-8:
+// vim:ts=4:sw=4:et:
