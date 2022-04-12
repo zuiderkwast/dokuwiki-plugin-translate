@@ -128,8 +128,10 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
 
 
     /**
-     * Hook for old event HTML_EDITFORM_OUTPUT an new event FORM_EDIT_OUTPUT
-     * Adds hidden form elements to the edit form.
+     * Hook for event HTML_EDITFORM_OUTPUT (DW ≤ 2020-07-29 "hogfather") and
+     * event FORM_EDIT_OUTPUT (DW > 2020-07-29 "hogfather" )
+     * Check and gather info on the untranslated page and the current form.
+     * If needed, call the method that adds our elements to the form.
      */
     public function handleHtmlEditformOutput($event, $param) {
         global $INFO, $ID;
