@@ -31,8 +31,10 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         $contr->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handleDokuwikiStarted');
         $contr->register_hook('TPL_ACT_UNKNOWN', 'BEFORE', $this, 'handleTplActUnknown');
         $contr->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'handleActPreprocess');
-        $contr->register_hook('FORM_EDIT_OUTPUT', 'BEFORE', $this, 'handleHtmlEditformOutput', []); // new
-        $contr->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'handleHtmlEditformOutput'); // old
+        // Events for DW > 2020-07-29 "hogfather"
+        $contr->register_hook('FORM_EDIT_OUTPUT', 'BEFORE', $this, 'handleHtmlEditformOutput', []);
+        // Events for DW ≤ 2020-07-29 "hogfather"
+        $contr->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'handleHtmlEditformOutput');
         // TODO: When a translation is deleted, delete it from the original's list of translations.
         //$contr->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'handlePageWrite');
         $contr->register_hook('TPL_ACT_RENDER', 'BEFORE', $this, 'handleActRender');
@@ -147,16 +149,21 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         // Insert original page on the side
         $form = $event->data;
         if (is_a($form, \dokuwiki\Form\Form::class)) {
-            $pos = $form->findPositionByType('textarea'); // new
+            // DW > 2020-07-29 "hogfather"
+            $pos = $form->findPositionByType('textarea');
             if ($pos===false) return;
             $this->handleHtmlEditformOutputNG($form, $pos, $origtext);
         } else {
-            $pos = $form->findElementByType('wikitext'); // old
+            // DW ≤ 2020-07-29 "hogfather"
+            $pos = $form->findElementByType('wikitext');
             if ($pos===false) return;
             $this->handleHtmlEditformOutputLegacy($form, $pos, $origtext);
         }
     }
 
+    /**
+     * Add our elements to the form. DW > 2020-07-29 "hogfather"
+     */
     protected function handleHtmlEditformOutputNG($form, $pos, $origtext) {
         // Before the wikitext...
         $form->addElement(new dokuwiki\Form\TagOpenElement('div', array('id'=>'wrapper__wikitext','class'=>'hor')), $pos++);
@@ -177,6 +184,9 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
         $form->addElement(new dokuwiki\Form\TagCloseElement('div'), $pos++);
     }
 
+    /**
+     * Add our elements to the form. DW ≤ 2020-07-29 "hogfather"
+     */
     protected function handleHtmlEditformOutputLegacy($form, $pos, $origtext) {
         // Before the wikitext...
         $form->insertElement($pos++, form_makeOpenTag('div', array('id'=>'wrapper__wikitext','class'=>'hor')));
