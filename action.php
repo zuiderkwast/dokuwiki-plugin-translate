@@ -168,22 +168,24 @@ class action_plugin_translate extends DokuWiki_Action_Plugin {
      */
     protected function handleHtmlEditformOutputNG($form, $pos, $origtext) {
         // Before the wikitext...
-        $form->addElement(new dokuwiki\Form\TagOpenElement('div', array('id'=>'wrapper__wikitext','class'=>'hor')), $pos++);
+        $form->addTagOpen('div', $pos++)->id('wrapper__wikitext')->addClass('hor');
         // After the wikitext...
         $pos++;
-        $form->addElement(new dokuwiki\Form\TagCloseElement('div'), $pos++);
-        $form->addElement(new dokuwiki\Form\TagOpenElement('div', array('id'=>'wrapper__sourcetext','class'=>'hor')), $pos++);
-        $origelem = '<textarea id="translate__sourcetext" '.
-                    //buildAttributes($attrs,true).
-                    'class="edit" readonly="readonly" cols="80" rows="10"'.
-                    'style="width:100%;"'.//  height:600px; overflow:auto
-                    '>'.NL.
-                    hsc($origtext).
-                    '</textarea>';
-        $form->addElement(new dokuwiki\Form\HTMLElement($origelem), $pos++);
-        $form->addElement(new dokuwiki\Form\TagCloseElement('div'), $pos++);
-        $form->addElement(new dokuwiki\Form\TagOpenElement('div', array('class'=>'clearer')), $pos++);
-        $form->addElement(new dokuwiki\Form\TagCloseElement('div'), $pos++);
+        $form->addTagClose('div', $pos++);
+        $form->addTagOpen('div', $pos++)->id('wrapper__sourcetext')->addClass('hor');
+
+        $attrs=Array();
+        $attrs['readonly']='readonly';
+        $attrs['cols']=80;
+        $attrs['rows']=10;
+        $attrs['style']='width:100%;';
+        $attrs['readonly']='readonly';
+        $form->addTextarea('origWikitext', '', $pos++)->attrs($attrs)->val($origtext)
+            ->id('translate__sourcetext')->addClass('edit');
+
+        $form->addTagClose('div', $pos++);
+        $form->addTagOpen('div', $pos++)->addClass('clearer');
+        $form->addTagClose('div', $pos++);
     }
 
     /**
