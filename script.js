@@ -1,62 +1,45 @@
-
-
 /**
  * Fix the edit window size controls, for the translation view.
  */
-var _initSizeCtl = initSizeCtl;
-initSizeCtl = function(ctlid,edid){
+(function () {
+    var initSizeCtlOrg = dw_editor.initSizeCtl;
+    dw_editor.initSizeCtl = function(ctlarea, editor) {
+        // typically '#size__ctl', '#wiki__text'; on binky +
 
-    // typically 'size__ctl', 'wiki__text';
-    _initSizeCtl(ctlid,edid);
+        initSizeCtlOrg(ctlarea, editor);
 
-    var trid = 'translate__sourcetext';
+        var trid = '#translate__sourcetext';
+        var $textarea = jQuery(trid);
+        var $ctl      = jQuery(ctlarea);
+        if(!$ctl.length || !$textarea.length) return;
 
-    if(!document.getElementById){ return; }
+        $textarea.css('height', DokuCookie.getValue('sizeCtl') || '300px');
 
-    var ctl      = $(ctlid);
-    var textarea = $(trid);
-    if(!ctl || !textarea) return;
+        var wrp = DokuCookie.getValue('wrapCtl');
+        if(wrp){
+            dw_editor.setWrap($textarea[0], wrp);
+        } // else use default value
 
-    var hgt = DokuCookie.getValue('sizeCtl');
-    if(hgt){
-      textarea.style.height = hgt;
-    }else{
-      textarea.style.height = '300px';
-    }
+        // loop through the images in $ctl
+        var c=$ctl.find('img');
+        jQuery(c[0]).on('click',function(){dw_editor.sizeCtl(trid,100);});
+        jQuery(c[1]).on('click',function(){dw_editor.sizeCtl(trid,-100);});
+        jQuery(c[2]).on('click',function(){dw_editor.toggleWrap(trid);});
 
-    var wrp = DokuCookie.getValue('wrapCtl');
-    if(wrp){
-      setWrap(textarea, wrp);
-    } // else use default value
+        // add a button to switch split view
+        jQuery(document.createElement('img'))
+            .attr('src', DOKU_BASE+'lib/plugins/translate/images/splitswitch.gif')
+            .attr('alt', '')
+            .on('click', function(){switchSplitView();})
+            .appendTo($ctl);
+    };
 
-    // loop through the images in ctl
-    var c = ctl.getElementsByTagName('img');
-    if (c) {
-        //if (console) console.debug(c);
-        addEvent(c[0],'click',function(){sizeCtl(trid,100);});
-        addEvent(c[1],'click',function(){sizeCtl(trid,-100);});
-        addEvent(c[2],'click',function(){toggleWrap(trid);});
-    }
-
-    // add a button to switch split view
-    var v = document.createElement('img');
-    v.src = DOKU_BASE+'lib/plugins/translate/images/splitswitch.gif';
-    ctl.style.width = '80px'; // add 20px to the container
-    ctl.appendChild(v);
-    addEvent(v,'click',function(){switchSplitView();});
-};
-
-function switchSplitView(){
-    var edit = $('wrapper__wikitext');
-    var orig = $('wrapper__sourcetext');
-    if (!edit || !orig) { return; }
-    if (edit.className == 'hor') {
-        edit.className = orig.className = 'ver';
-    } else if (edit.className == 'ver') {
-        edit.className = orig.className = 'off';
-    } else {
-        edit.className = orig.className = 'hor';
-    }
-};
-
-// vim:ts=4:sw=4:et:enc=utf-8:
+    function switchSplitView(){
+        var edit = document.getElementById('wrapper__wikitext');
+        var orig = document.getElementById('wrapper__sourcetext');
+        var cycle={ hor: 'ver', ver: 'off', off: 'hor'};
+        if (!edit || !orig) { return; }
+        edit.className=orig.className=cycle[edit.className];
+    };
+})();
+// vim:ts=4:sw=4:et:
